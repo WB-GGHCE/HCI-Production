@@ -12,9 +12,9 @@
 
 /******************************************************************************/
 // Purpose		    : To prepare Old methodology HCI 2025, 2020, 2015, 2010 with the latest data as in 2025  
-// Input datasets	: 
-// Data Sources     : 
-// Source Used		: 
+// Input datasets	: Visit component data prep do files
+// Data Sources     : Visit component data prep do files
+// Source Used		: Visit component data prep do files
 
 // Output dataset	: Old_hci.dta
 // Last edited	    : Oct 15, 2025
@@ -71,7 +71,6 @@ tab wbcountryname if !missing(hlo_mf_fill_2020) & year == 2025 // 175
 cap drop x_2010 x_2015 x_2020
 gen x_2010 = 1    if !missing(hlo_mf_fill_2010) & missing(eys_pp_mf_fill_2010) & year == 2025  // 15: tag variable for hlo  available  but pp enrol missing
 gen x_2015 = 1    if !missing(hlo_mf_fill_2015) & missing(eys_pp_mf_fill_2015) & year == 2025  // 6: tag variable for hlo  available  but pp enrol missing
-//gen x_2018 = 1    if !missing(hlo_mf_fill_2018) & missing(eys_pp_mf_fill_2018) & year == 2025  // 
 gen x_2020 = 1    if !missing(hlo_mf_fill_2020) & missing(eys_pp_mf_fill_2020) & year == 2025  //2  
 
 tab wbcountryname if !missing(hlo_mf_fill_2010) & missing(eys_sa_mf_fill_2010) & year == 2025 // 1: countries for which the latest HLO is available
@@ -159,7 +158,7 @@ foreach gen in mf m f{
 // Generating Primary through Secodary EYS for missing data from old primary, lower secondary and upper secondary data. Since education team provided us with ready made primary through secondary EYS in the latest dataset (final: eys_sa_`gen'_fill_`yr')
 
 foreach gen in mf m f{
-	foreach yr in 2010 2015  2020 { // 2018
+	foreach yr in 2010 2015  2020 { 
 		gen eys_`gen'_fill_`yr'_old        = (cer_p_`gen'_fill_`yr'_old*6) + (cer_ls_`gen'_fill_`yr'_old*3) + (cer_us_`gen'_fill_`yr'_old*3)
 		gen eys_`gen'_repadj_fill_`yr'_old = (cer_p_`gen'_repadj_fill_`yr'_old*6) + (cer_ls_`gen'_repadj_fill_`yr'_old*3) + (cer_us_`gen'_repadj_fill_`yr'_old*3)
  	}
@@ -167,7 +166,7 @@ foreach gen in mf m f{
 
 // Prioritizing rep adjusted EYS and then substituting non-rep adjusted EYS if rep adjusted missing
 foreach gen in mf m f{
-	foreach yr in 2010 2015  2020 { // 2018
+	foreach yr in 2010 2015  2020 { 
 		    gen eys_sa_`gen'_fill_`yr'_old     = eys_`gen'_repadj_fill_`yr'_old if year == 2025
 		replace eys_sa_`gen'_fill_`yr'_old     = eys_`gen'_fill_`yr'_old        if year == 2025 & missing(eys_`gen'_repadj_fill_`yr'_old)
 	
@@ -183,7 +182,7 @@ merge 1:1 wbcode year using `enrol_old', keep(3) nogen
 
 // replacing missing values with old values from old hci calculations
 foreach gen in mf m f{
-	foreach yr in 2010 2015  2020 { // 2018
+	foreach yr in 2010 2015  2020 { 
 		// for missing pre-primary in the new data 
 		cap gen eys_pp_`gen'_fill_`yr'     = .
 		replace eys_pp_`gen'_fill_`yr'     = cer_pp_`gen'_fill_`yr'_old         if x_`yr' == 1 & year == 2025
@@ -308,17 +307,16 @@ foreach yr in $years{
 sort wbcode year
 // Condensing for GitHub
 keeporder wbcode wbcountryname year new_wbregion new_wbincomegroup old_wbregion old_wbincomegroup ///
-          hci_*_2010 hci_*_2015  hci_*_2020 hci_*_2025 /// hci_*_2018
-		  psurv_*_2010 psurv_*_2015  psurv_*_2020 psurv_*_2025 mort_0to4_*_year_* mort_0to4_*_src_* mort_0to4_*_fill /// psurv_*_2018
-		  eys_pp_*_2010 eys_pp_*_2015 eys_pp_*_2020 eys_pp_*_2025  cer_pp_*_year_* cer_pp_*_fill_src_* cer_pp_*_fill /// eys_pp_*_2018
-		  eys_sa_*_fill_2010 eys_sa_*_fill_2015  eys_sa_*_fill_2020  eys_sa_*_fill_2025 eys_sa_*_year_* eys_sa_*_fill_src_* eys_sa_*_fill /// eys_sa_*_fill_2018
-		  hlo_*_fill_2010 hlo_*_fill_2015  hlo_*_fill_2020 hlo_*_fill_2025 hlo_*_year_* hlo_*_source_*  /// hlo_*_fill_2018
-		  lays_*_2010 lays_*_2015  lays_*_2020 lays_*_2025  /// lays_*_2018
-		  nostu_*_2010 nostu_*_2015  nostu_*_2020 nostu_*_2025 stunt_*_year_* stunt_*_fill_src_* stunt_svy_*_fill /// nostu_*_2018
-		  asr_*_2010 asr_*_2015  asr_*_2020 asr_*_2025 surv_15to60_*_year_* surv_15to60_*_src_* surv_15to60_*_fill ///   asr_*_2018
-		  rph_edu_*_2010 rph_edu_*_2015  rph_edu_*_2020 rph_edu_*_2025 /// rph_edu_*_2018
-		  rph_hlth_*_2010 rph_hlth_*_2015  rph_hlth_*_2020 rph_hlth_*_2025 /// rph_hlth_*_2018
-		  rph_sur_*_2010 rph_sur_*_2015  rph_sur_*_2020 rph_sur_*_2025     //rph_sur_*_2018
+          hci_*_2010 hci_*_2015  hci_*_2020 hci_*_2025 ///
+		  psurv_*_2010 psurv_*_2015  psurv_*_2020 psurv_*_2025 mort_0to4_*_year_* mort_0to4_*_src_* mort_0to4_*_fill /// 
+		  eys_pp_*_2010 eys_pp_*_2015 eys_pp_*_2020 eys_pp_*_2025  cer_pp_*_year_* cer_pp_*_fill_src_* cer_pp_*_fill /// 
+		  hlo_*_fill_2010 hlo_*_fill_2015  hlo_*_fill_2020 hlo_*_fill_2025 hlo_*_year_* hlo_*_source_*  /// 
+		  lays_*_2010 lays_*_2015  lays_*_2020 lays_*_2025  /// 
+		  nostu_*_2010 nostu_*_2015  nostu_*_2020 nostu_*_2025 stunt_*_year_* stunt_*_fill_src_* stunt_svy_*_fill /// 
+		  asr_*_2010 asr_*_2015  asr_*_2020 asr_*_2025 surv_15to60_*_year_* surv_15to60_*_src_* surv_15to60_*_fill ///   
+		  rph_edu_*_2010 rph_edu_*_2015  rph_edu_*_2020 rph_edu_*_2025 /// 
+		  rph_hlth_*_2010 rph_hlth_*_2015  rph_hlth_*_2020 rph_hlth_*_2025 /// 
+		  rph_sur_*_2010 rph_sur_*_2015  rph_sur_*_2020 rph_sur_*_2025     //
 		  
 		 
 compress		
