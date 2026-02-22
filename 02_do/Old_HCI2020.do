@@ -57,7 +57,7 @@ merge 1:1 wbcode year using "$clone/03_output/hlo_data.dta", keep(3) nogen   // 
 // Bringing in the latest EYS data provided by the education team 
 merge 1:1 wbcode year using "$clone/03_output/eys_data.dta", keep(3) nogen
 
-/*
+
 /*
 // By-hand change for adding 2019 older pre-primary enrolment rate from HCI data for Mexico. Since 2020 pre-primary enrolment rate is missing for Mexico. Only to add Mexico 2020 HCI in the final dataset for sharing with Mexico team / as on 10/28/25 [remove this later!!!]
 replace cer_pp_mf_fill_2020 = .9904342  if year == 2025 & wbcode == "MEX"
@@ -97,13 +97,12 @@ tab wbcountryname if !missing(hlo_mf_fill_2020) & missing(eys_sa_mf_fill_2020) &
 // Tags for countries for which HLO is available, but primary through secondary EYS (enrolments) is missing for 2010 and 2015 
 gen y_2010 = 1    if !missing(hlo_mf_fill_2010) & missing(eys_sa_mf_fill_2010) & year == 2025
 gen y_2015 = 1    if !missing(hlo_mf_fill_2015) & missing(eys_sa_mf_fill_2015) & year == 2025
-//gen y_2018 = 1    if !missing(hlo_mf_fill_2018) & missing(eys_sa_mf_fill_2018) & year == 2025
 gen y_2020 = 1    if !missing(hlo_mf_fill_2020) & missing(eys_sa_mf_fill_2020) & year == 2025
 
 preserve
 
 // OLD HCI Data for pre-primary enrolment rate for 2010 & 2015
-use "$clone/01_raw_data/misc/previous_hci_data", clear	
+use "$clone/01_data/misc/previous_hci_data", clear	
 drop if wbcode == "x"
 
 keeporder countrynumber wbcode wbcountryname year ///
@@ -138,7 +137,7 @@ foreach gen in mf m f{
 	}
 }
 
-// Genrating final  old variables for 2010 and 2015 (fill, year, type, source)
+// Genrating final  old variables for 2010, 2015 and 2020 (fill, year, type, source)
 
 foreach gen in mf m f{
 	foreach lev in pp p ls us{
@@ -218,7 +217,7 @@ foreach gen in mf m f{
 	}
 }
 
-*/
+
 *-------------------------------------------------------------------------------
 
 //2.Education
