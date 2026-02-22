@@ -57,25 +57,10 @@ merge 1:1 wbcode year using "$clone/03_output/hlo_data.dta", keep(3) nogen   // 
 // Bringing in the latest EYS data provided by the education team 
 merge 1:1 wbcode year using "$clone/03_output/eys_data.dta", keep(3) nogen
 
-
-/*
-// By-hand change for adding 2019 older pre-primary enrolment rate from HCI data for Mexico. Since 2020 pre-primary enrolment rate is missing for Mexico. Only to add Mexico 2020 HCI in the final dataset for sharing with Mexico team / as on 10/28/25 [remove this later!!!]
-replace cer_pp_mf_fill_2020 = .9904342  if year == 2025 & wbcode == "MEX"
-replace cer_pp_m_fill_2020  = .9813031  if year == 2025 & wbcode == "MEX"
-replace cer_pp_f_fill_2020  = 1         if year == 2025 & wbcode == "MEX"
-replace cer_pp_mf_year_2020 = 2017      if year == 2025 & wbcode == "MEX"
-replace cer_pp_m_year_2020 = 2017      if year == 2025 & wbcode == "MEX"
-replace cer_pp_f_year_2020 = 2017      if year == 2025 & wbcode == "MEX"
-*/
-
 //cap gen cer_pp_mf_fill_2018 = .
-
-// Bringing in the latest EYS data 
-//merge 1:1 wbcode year using "$clone/03_output/hci_6to17/enrollment_sa_data", keep(1 3) nogen   // Okay
-
 //cap gen eys_sa_mf_fill_2018 = .
 *-------------------------------------------------------------------------------
-// Todays input code below (10/24/2025) We get 8 more countries
+// To increase the country coverage for 2010, 2015 and 2020 by using old HCI data 
 
 tab wbcountryname if !missing(hlo_mf_fill_2010) & year == 2025 // 136: countries for which the latest HLO is available
 tab wbcountryname if !missing(hlo_mf_fill_2015) & year == 2025 // 151: countries for which the latest HLO is available
@@ -325,7 +310,7 @@ sort wbcode year
 keeporder wbcode wbcountryname year new_wbregion new_wbincomegroup old_wbregion old_wbincomegroup ///
           hci_*_2010 hci_*_2015  hci_*_2020 hci_*_2025 /// hci_*_2018
 		  psurv_*_2010 psurv_*_2015  psurv_*_2020 psurv_*_2025 mort_0to4_*_year_* mort_0to4_*_src_* mort_0to4_*_fill /// psurv_*_2018
-		  eys_pp_*_2010 eys_pp_*_2015 eys_pp_*_2020 eys_pp_*_2025  /// eys_pp_*_2018
+		  eys_pp_*_2010 eys_pp_*_2015 eys_pp_*_2020 eys_pp_*_2025  cer_pp_*_year_* cer_pp_*_fill_src_* cer_pp_*_fill /// eys_pp_*_2018
 		  eys_sa_*_fill_2010 eys_sa_*_fill_2015  eys_sa_*_fill_2020  eys_sa_*_fill_2025 eys_sa_*_year_* eys_sa_*_fill_src_* eys_sa_*_fill /// eys_sa_*_fill_2018
 		  hlo_*_fill_2010 hlo_*_fill_2015  hlo_*_fill_2020 hlo_*_fill_2025 hlo_*_year_* hlo_*_source_*  /// hlo_*_fill_2018
 		  lays_*_2010 lays_*_2015  lays_*_2020 lays_*_2025  /// lays_*_2018
@@ -335,7 +320,7 @@ keeporder wbcode wbcountryname year new_wbregion new_wbincomegroup old_wbregion 
 		  rph_hlth_*_2010 rph_hlth_*_2015  rph_hlth_*_2020 rph_hlth_*_2025 /// rph_hlth_*_2018
 		  rph_sur_*_2010 rph_sur_*_2015  rph_sur_*_2020 rph_sur_*_2025     //rph_sur_*_2018
 		  
-		  //cer_pp_*_year_* cer_pp_*_fill_src_* cer_pp_*_fill
+		 
 compress		
 sa "$clone/03_output/Old_hci.dta", replace
 
