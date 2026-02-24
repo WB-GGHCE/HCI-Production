@@ -166,7 +166,7 @@ foreach gen in mf m f {
 		}
 
 // Saving only survey-based final stunting data		
-sa "$clone/03_output/stunting_svy_data.dta", replace	
+sa "$clone/03_output/stunting_data.dta", replace	
 		
 *-------------------------------------------------------------------------------
 *-------------------------------------------------------------------------------
