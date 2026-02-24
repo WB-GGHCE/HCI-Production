@@ -1,7 +1,7 @@
-* *************************************************************************** *
-*			Reproducibility Package for Human Capital Index             * 
+* ***************************************************************************  *
+*			Reproducibility Package for Human Capital Index                    * 
 *																			   *
-*  PROJECT TITLE: 		Human Capital Index 						   *
+*  PROJECT TITLE: 		Human Capital Index 						           *
 *																 			   *
 *  PURPOSE:  			Run complete project for HCI                           *
 *  AUTHOR: 				Brian Stacy, Zeeshan Haider  						   *

@@ -22,6 +22,20 @@ investing in the human capital of their citizens.
 For more details, please visit:
 <https://www.worldbank.org/en/publication/human-capital>
 
+## Directory Structure
+
+1. **01_data** contains the raw data for the project for each indicator.
+
+2. **02_do** contains the main replication files for the project. All the code is written in Stata. The entire project can be run by running the file `run_HCI.do`.
+
+3. **03_output**. This folder contains a number of final output files in Stata .dta format. The final dataset is `03_output/hci_data.dta`.
+
+## Instructions to Replicators
+
+* Clone the repository to your local machine.
+* Please run `run_HCI.do` to generate the data. This file will run all of the code to generate the data. The replicator should expect the code to run for around **1-2** minutes.
+* There should be no need to change the working directory. The code should provide a prompt to change the working directory if necessary.
+
 ## The HCI Methodology
 
 The HCI is designed to highlight how improvements in current health and
