@@ -31,7 +31,7 @@ quietly {
   * 2) Define user-dependant path for local clone repo
   *-----------------------------------------------------------------------------
   * Change here only if this repo is renamed
-  local this_repo     "LHCI-Production"
+  local this_repo     "HCI-Production"
   * Change here only if some file other than .here is used
   local this_run_do   ".here"
 
@@ -93,7 +93,7 @@ quietly {
   * 3) Define user-dependant path for local data
   *-----------------------------------------------------------------------------
   * Change here only if this repo is renamed
-  local this_repo     "1.lhci_production"
+  local this_repo     "1.hci_production"
   * Change here only if some file other than .here is used
   local this_run_do   ".here"
 
