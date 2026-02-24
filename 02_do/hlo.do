@@ -66,6 +66,8 @@ sort wbcode year
 *drop china test that is "PISA (Shanghai Only)"
 drop if wbcode=="CHN" & test=="PISA (Shanghai Only)"
 drop if wbcode=="KHM" & test=="EGRA"
+*exclude Guyana 2020 data point as it was flagged by country team for quality issues
+drop if wbcode=="GUY" & year==2020
 
 *===============================================================================
 // 1. Identify 2025 test for each country (before collapsing)
