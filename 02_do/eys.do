@@ -39,6 +39,13 @@ dir "$clone"
 *-------------------------------------------------------------------------------
 *-------------------------------------------------------------------------------
 
+*-------------------------------------------------------------------------------
+// Bringing in data for special cases in EYS e.g. Kosovo
+import excel using "$clone\01_data\misc\Special_Cases.xlsx", clear first sheet("EYS")
+tempfile special_cases
+save `special_cases', replace
+*------------------------------------------------------------------------------			
+
 // EYS dataset from Education team
 use "${clone}/01_data/eys/eys_data_for_HCI_Team_Dec_11_2025_v2.dta", clear
 
@@ -111,6 +118,19 @@ keeporder wbcode wbcountryname year                         					///
 		  cer_us_m_fill_2010   cer_us_m_fill_repadj_2010 cer_us_m_type_2010 cer_us_m_year_2015 cer_us_m_source_2010 rep_us_m_fill_2010 rep_us_m_fill_year_2010	   	  /// 
 		  cer_us_f_fill_2010   cer_us_f_fill_repadj_2010 cer_us_f_type_2010 cer_us_f_year_2015 cer_us_f_source_2010  rep_us_f_fill_2010 rep_us_f_fill_year_2010
 		  
+	  
+foreach gen in mf m f{
+	replace eys_pp_`gen'_source	= "Constructed by WB team using UIS data" if !missing(eys_pp_`gen'_source)	  
+	replace eys_pp_`gen'_source_2020	= "Constructed by WB team using UIS data" if !missing(eys_pp_`gen'_source_2020)	  
+	replace eys_pp_`gen'_source_2015	= "Constructed by WB team using UIS data" if !missing(eys_pp_`gen'_source_2015)	  
+	replace eys_pp_`gen'_source_2010	= "Constructed by WB team using UIS data" if !missing(eys_pp_`gen'_source_2010)	  
+	
+	replace eys_sa_`gen'_source	= "Constructed by WB team using UIS data" if !missing(eys_sa_`gen'_source)	  
+	replace eys_sa_`gen'_source_2020	= "Constructed by WB team using UIS data" if !missing(eys_sa_`gen'_source_2020)	  
+	replace eys_sa_`gen'_source_2015	= "Constructed by WB team using UIS data" if !missing(eys_sa_`gen'_source_2015)	  
+	replace eys_sa_`gen'_source_2010	= "Constructed by WB team using UIS data" if !missing(eys_sa_`gen'_source_2010)	  
+
+}		  
 *-------------------------------------------------------------------------------		  
 // Merge with master data file
 merge m:1 wbcode year using "$clone\01_data\misc\masterdata.dta",  keep(2 3) nogen
@@ -552,11 +572,16 @@ foreach gen in mf m f {
 		
 *-------------------------------------------------------------------------------		
 *-------------------------------------------------------------------------------		
+// Bringing in special cases data 
+//e.g. Kosovo for 2025
+drop if wbcode == "XKX" & year == 2025
+append using `special_cases'
 *-------------------------------------------------------------------------------		
 
 // School age EYS 6-17 final dataset
 keep if inrange(year, 2001, 2025)  // to keep file size small
 compress
+sort wbcode year
 save "$clone\03_output\eys_data", replace
 
 *-------------------------------------------------------------------------------		
