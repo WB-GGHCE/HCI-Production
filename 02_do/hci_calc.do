@@ -230,6 +230,8 @@ foreach yr in $years{
 	gen asr_`gen'_`yr'       =      surv_15to60_`gen'_fill_`yr'      // Adult survival rates
 	gen eys_pp_`gen'_`yr'    =      eys_pp_`gen'_fill_`yr'*2         // Pre-Primary EYS (weight of 2 as discussed with the team)
 	gen lays_`gen'_`yr'      =      ((eys_pp_`gen'_`yr' + eys_sa_`gen'_fill_`yr') * (hlo_`gen'_fill_`yr'/625))  // 5-17 years LAYS
+	gen eys_`gen'_`yr'       =      eys_pp_`gen'_`yr' + eys_sa_`gen'_fill_`yr' 	  // Total EYS (pre-primary plus primary through secondary)            
+	gen hlo_`gen'_`yr'      =      hlo_`gen'_fill_`yr'                // Harmonized learning outcomes (HLO)
 	}
 }
 
@@ -309,8 +311,8 @@ sort wbcode year
 keeporder wbcode wbcountryname year new_wbregion new_wbincomegroup old_wbregion old_wbincomegroup ///
           hci_*_2010 hci_*_2015  hci_*_2020 hci_*_2025 ///
 		  psurv_*_2010 psurv_*_2015  psurv_*_2020 psurv_*_2025 mort_0to4_*_year_* mort_0to4_*_src_* mort_0to4_*_fill /// 
-		  eys_pp_*_2010 eys_pp_*_2015 eys_pp_*_2020 eys_pp_*_2025  cer_pp_*_year_* cer_pp_*_fill_src_* cer_pp_*_fill /// 
-		  hlo_*_fill_2010 hlo_*_fill_2015  hlo_*_fill_2020 hlo_*_fill_2025 hlo_*_year_* hlo_*_source_*  /// 
+		  eys_**_2010 eys_**_2015 eys_**_2020 eys_**_2025  cer_p_*_year_* cer_p_*_fill_src_* cer_p_*_fill ///
+		  hlo_**_2010 hlo_**_2015  hlo_**_2020 hlo_**_2025 hlo_*_year_* hlo_*_source_*  /// 
 		  lays_*_2010 lays_*_2015  lays_*_2020 lays_*_2025  /// 
 		  nostu_*_2010 nostu_*_2015  nostu_*_2020 nostu_*_2025 stunt_*_year_* stunt_*_fill_src_* stunt_svy_*_fill /// 
 		  asr_*_2010 asr_*_2015  asr_*_2020 asr_*_2025 surv_15to60_*_year_* surv_15to60_*_src_* surv_15to60_*_fill ///   
@@ -322,6 +324,65 @@ keeporder wbcode wbcountryname year new_wbregion new_wbincomegroup old_wbregion 
 compress		
 sa "$clone/03_output/hci_data.dta", replace
 
+// Save long-format HCI dataset (one row per country-year)
+	keep if year == 2025
+	keep wbcode wbcountryname new_wbregion new_wbincomegroup old_wbregion old_wbincomegroup ///
+		hci_mf_* hci_m_* hci_f_* ///
+		psurv_mf_* psurv_m_* psurv_f_* ///
+		hlo_mf_* hlo_m_* hlo_f_* ///
+		eys_mf_* eys_m_* eys_f_* ///
+		lays_mf_* lays_m_* lays_f_* ///
+		nostu_mf_* nostu_m_* nostu_f_* ///
+		asr_mf_* asr_m_* asr_f_*
+		
+	*drop src and year info
+	cap drop *_src_*
+	cap drop *_source_*
+	cap drop *_year_*
+	cap drop *_type_*
+	cap drop *_fill_*
+
+	reshape long hci_mf_ hci_m_ hci_f_ ///
+		psurv_mf_ psurv_m_ psurv_f_ ///
+		hlo_mf_ hlo_m_ hlo_f_ ///
+		eys_mf_ eys_m_ eys_f_ ///
+		lays_mf_ lays_m_ lays_f_ ///
+		nostu_mf_ nostu_m_ nostu_f_ ///
+		asr_mf_ asr_m_ asr_f_, i(wbcode wbcountryname new_wbregion new_wbincomegroup old_wbregion old_wbincomegroup) j(year)
+
+	* remove trailing _ from variable names
+	rename (hci_mf_ hci_m_ hci_f_ psurv_mf_ psurv_m_ psurv_f_ hlo_mf_ hlo_m_ hlo_f_ eys_mf_ eys_m_ eys_f_ lays_mf_ lays_m_ lays_f_ nostu_mf_ nostu_m_ nostu_f_ asr_mf_ asr_m_ asr_f_) ///
+		   (hci_mf hci_m hci_f psurv_mf psurv_m psurv_f hlo_mf hlo_m hlo_f eys_mf eys_m eys_f lays_mf lays_m lays_f nostu_mf nostu_m nostu_f asr_mf asr_m asr_f)
+
+	label var hci_mf   "Human Capital Index, gender=mf"
+	label var hci_m    "Human Capital Index, gender=m"
+	label var hci_f    "Human Capital Index, gender=f"
+	label var psurv_mf "Prob Survival to Age 5, gender=mf"
+	label var psurv_m  "Prob Survival to Age 5, gender=m"
+	label var psurv_f  "Prob Survival to Age 5, gender=f"
+	label var hlo_mf   "Harmonized Learning Outcomes, gender=mf"
+	label var hlo_m    "Harmonized Learning Outcomes, gender=m"
+	label var hlo_f    "Harmonized Learning Outcomes, gender=f"
+	label var eys_mf   "Expected Years of Schooling, gender=mf"
+	label var eys_m    "Expected Years of Schooling, gender=m"
+	label var eys_f    "Expected Years of Schooling, gender=f"
+	label var lays_mf  "Learning-adjusted Expected Years of School, gender=mf"
+	label var lays_m   "Learning-adjusted Expected Years of School, gender=m"
+	label var lays_f   "Learning-adjusted Expected Years of School, gender=f"
+	label var nostu_mf "Fraction of Children Under 5 Not Stunted, gender=mf"
+	label var nostu_m  "Fraction of Children Under 5 Not Stunted, gender=m"
+	label var nostu_f  "Fraction of Children Under 5 Not Stunted, gender=f"
+	label var asr_mf   "Adult Survival Rate, gender=mf"
+	label var asr_m    "Adult Survival Rate, gender=m"
+	label var asr_f    "Adult Survival Rate, gender=f"
+
+	sort wbcode year
+	compress
+	sa "$clone/03_output/hci_data_long.dta", replace
+
+
 *-------------------------------------------------------------------------------
 *-------------------------------------------------------------------------------
 *-------------------------------------------------------------------------------
+
+
